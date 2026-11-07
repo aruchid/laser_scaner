@@ -11,6 +11,8 @@ def extract(image, threshold=0.2):
     signal=np.maximum(image-np.percentile(image,20,axis=0),0)
     peak=signal.max(axis=0)
     weights=np.where(signal>=threshold*peak,signal,0)
+    # Normalize each nonzero column before summing weighted row coordinates.
+    weights=np.divide(weights,peak[None,:],out=np.zeros_like(weights),where=peak[None,:]>0)
     total=weights.sum(axis=0)
     valid=(peak>max(float(np.max(peak))*.05,1e-9))&(total>0)
     center=np.full(image.shape[1],np.nan)
